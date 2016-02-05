@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : pagos.xml
+    Description:
+        Estructura de la tabla pagos.
+-->
+<tabla>
+   <columna>
+      <nombre>fase</nombre>
+      <tipo>character varying(50)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>fecha</nombre>
+      <tipo>date</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>id</nombre>
+      <tipo>serial</tipo>
+      <nulo>NO</nulo>
+      <defecto>nextval('pagos_id_seq'::regclass)</defecto>
+   </columna>
+   <columna>
+      <nombre>idalbaran</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>idfactura</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>idpedido</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>idrecibo</nombre>
+      <tipo>integer</tipo>
+   </columna>
+   <columna>
+      <nombre>importe</nombre>
+      <tipo>double precision</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>nota</nombre>
+      <tipo>text</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <restriccion>
+      <nombre>pagos_pkey</nombre>
+      <consulta>PRIMARY KEY (id)</consulta>
+   </restriccion>
+</tabla>

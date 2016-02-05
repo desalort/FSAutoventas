@@ -1,0 +1,351 @@
+{include="header"}
+
+<div class="container-fluid" style="margin-top: 10px;">
+   <div class="row">
+      <div class="col-sm-6">
+         <div class="btn-group hidden-xs">
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+               <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            {if condition="$fsc->page->is_default()"}
+            <a class="btn btn-sm btn-default active" href="{$fsc->url()}&amp;default_page=FALSE" title="Desmarcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {else}
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}&amp;default_page=TRUE" title="Marcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {/if}
+         </div>
+      </div>
+      <div class="col-sm-6 text-right">
+         <h2 style="margin-top: 0px;">Dashboard</h2>
+      </div>
+   </div>
+</div>
+
+<div class="container-fluid">
+   <section class="content">
+
+      <!-- Inicio Fila 1 de widgets -->
+      <div class="row">
+
+         <!-- Widget 1x1 -->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+            <div class="bs-callout bs-callout-info">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">{#FS_PRESUPUESTOS#}</span> de clientes</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=ventas_presupuestos">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->ventas_num_presupuestos()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-warning clickableRow" href="index.php?page=ventas_presupuestos&pendientes=TRUE">
+                        <i class="glyphicon glyphicon-time"></i> Pendientes <span class="badge">{loop="$fsc->ventas_num_presupuestos_pendientes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger clickableRow" href="index.php?page=ventas_presupuestos&rechazados=TRUE">
+                        <i class="glyphicon glyphicon-remove"></i> Rechazados <span class="badge">{loop="$fsc->ventas_num_presupuestos_rechazados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-ok"></i> Aprobados <span class="badge">{loop="$fsc->ventas_num_presupuestos_aprobados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         {/if}
+         <!-- Widget 1x2-->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+            <div class="bs-callout bs-callout-success">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">{#FS_PEDIDOS#}</span> de clientes</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=ventas_pedidos">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->ventas_num_pedidos()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-warning clickableRow" href="index.php?page=ventas_pedidos&pendientes=TRUE">
+                        <i class="glyphicon glyphicon-time"></i> Pendientes <span class="badge">{loop="$fsc->ventas_num_pedidos_pendientes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger clickableRow" href="index.php?page=ventas_pedidos&rechazados=TRUE">
+                        <i class="glyphicon glyphicon-remove"></i> Rechazados <span class="badge">{loop="$fsc->ventas_num_pedidos_rechazados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-ok"></i> Aprobados <span class="badge">{loop="$fsc->ventas_num_pedidos_aprobados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         {/if}
+
+         <!-- Widget 1x3 -->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+         {/if}
+            <div class="bs-callout bs-callout-warning">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">{#FS_ALBARANES#}</span> de clientes</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=ventas_albaranes">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->ventas_num_albaranes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-warning clickableRow" href="index.php?page=ventas_albaranes&ptefactura=TRUE">
+                        <i class="glyphicon glyphicon-time"></i> Pendientes <span class="badge">{loop="$fsc->ventas_num_albaranes_pendientes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-ok"></i> Aprobados <span class="badge">{loop="$fsc->ventas_num_albaranes_aprobados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+
+         <!-- Widget 1x4 -->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+         {/if}
+            <div class="bs-callout bs-callout-danger">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">Facturas</span> de clientes</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=ventas_facturas">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->ventas_num_facturas()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger clickableRow" href="index.php?page=ventas_facturas&sinpagar=TRUE">
+                        <i class="glyphicon glyphicon-exclamation-sign"></i> Sin cobrar <span class="badge">{loop="$fsc->ventas_num_facturas_sin_cobrar()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-briefcase"></i> Cobradas <span class="badge">{loop="$fsc->ventas_num_facturas_cobradas()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!--Fin Fila 1 de widgets-->
+
+      <!--Inicio Fila 2 de widgets-->
+      <div class="row">
+
+         <!-- Widget 2x1 -->
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {/if}
+            <div class="bs-callout bs-callout-info">
+               <div class="inner">
+                  <h4><strong>Servicios</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-success clickableRow" href="index.php?page=nuevo_servicio">
+                        <i class="glyphicon glyphicon-plus"></i> Crear nuevo
+                     </li>
+                     {loop="$fsc->num_total_estados_servicios()"}
+                     <li class="list-group-item clickableRow" style='background-color: #{$value["color"]};' href="index.php?page=ventas_servicios">
+                        <i class="glyphicon glyphicon-list"></i> {$value["descripcion"]} <span class="badge">{$value["total"]}</span>
+                     </li>
+                     {/loop}
+                  </ul>
+
+               </div>
+            </div>
+         </div>
+         {/if}
+
+         <!--Widget 2x2-->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {/if}
+            <div class="bs-callout bs-callout-success">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">{#FS_PEDIDOS#}</span> de proveedores</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=compras_pedidos">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->compras_num_pedidos()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-warning clickableRow" href="index.php?page=compras_pedidos&pendientes=TRUE">
+                        <i class="glyphicon glyphicon-time"></i> Pendientes <span class="badge">{loop="$fsc->compras_num_pedidos_pendientes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-ok"></i> Aprobados <span class="badge">{loop="$fsc->compras_num_pedidos_aprobados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         {/if}
+
+         <!--Widget 2x3-->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {/if}
+         {else}
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+         {/if}
+         {/if}
+            <div class="bs-callout bs-callout-warning">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">{#FS_ALBARANES#}</span> de proveedores</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=compras_albaranes">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->compras_num_albaranes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-warning clickableRow" href="index.php?page=compras_albaranes&ptefactura=TRUE">
+                        <i class="glyphicon glyphicon-time"></i> Pendientes <span class="badge">{loop="$fsc->compras_num_albaranes_pendientes()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-ok"></i> Aprobados <span class="badge">{loop="$fsc->compras_num_albaranes_aprobados()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+
+         <!--Widget 2x4-->
+         {if condition="in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])"}
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         <div class="col-lg-3 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {/if}
+         {else}
+         {if condition="in_array('servicios',$GLOBALS['plugins'])"}
+         <div class="col-lg-4 col-sm-6 col-xs-12">
+         {else}
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+         {/if}
+         {/if}
+            <div class="bs-callout bs-callout-danger">
+               <div class="inner">
+                  <h4><strong><span class="text-capitalize">Facturas</span> de proveedores</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-info clickableRow" href="index.php?page=compras_facturas">
+                        <i class="glyphicon glyphicon-list"></i> Realizados <span class="badge">{loop="$fsc->compras_num_facturas()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger clickableRow" href="index.php?page=compras_facturas&sinpagar=TRUE">
+                        <i class="glyphicon glyphicon-exclamation-sign"></i> Sin pagar <span class="badge">{loop="$fsc->compras_num_facturas_sin_pagar()"}{$value["total"]}{/loop}</span>
+                     </li>
+                     <li class="list-group-item list-group-item-success">
+                        <i class="glyphicon glyphicon-briefcase"></i> Pagadas <span class="badge">{loop="$fsc->compras_num_facturas_cobradas()"}{$value["total"]}{/loop}</span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!--Fin Fila 2 de widgets-->
+
+      <!--Inicio Fila 3 de widgets-->
+      <div class="row">
+
+         <!-- Widget 3x1 -->
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+            <div class="bs-callout bs-callout-success">
+               <div class="inner">
+                  <h4><strong>Informe resumido de facturación</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-success clickableRow" href="index.php?page=ventas_facturas">
+                        <i class="glyphicon glyphicon-list"></i>
+                        Total facturas de ventas
+                        <span class="badge">
+                           {loop="$fsc->importe_total_facturas_ventas()"}
+                              {$fsc->show_precio($value["total"])}
+                           {/loop}
+                        </span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger clickableRow" href="index.php?page=compras_facturas">
+                        <i class="glyphicon glyphicon-list"></i>
+                        Total facturas de compras
+                        <span class="badge">
+                           {loop="$fsc->importe_total_facturas_compras()"}
+                              {$fsc->show_precio($value["total"])}
+                           {/loop}
+                        </span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+
+         <!-- Widget 3x2 -->
+         <div class="col-lg-6 col-sm-6 col-xs-12">
+            <div class="bs-callout bs-callout-info">
+               <div class="inner">
+                  <h4><strong>Informe resumido de facturación pendiente</strong></h4>
+               </div>
+               <div class="text-center">
+                  <br/>
+                  <ul class="list-group">
+                     <li class="list-group-item list-group-item-success clickableRow" href="index.php?page=ventas_albaranes&mostrar=pendientes">
+                        <i class="glyphicon glyphicon-list"></i>
+                        Total albaranes pendientes del mes
+                        <span class="badge">
+                           {loop="$fsc->importe_total_albaranes_ventas_pendientes()"}
+                              {$fsc->show_precio($value["total"])}
+                           {/loop}
+                        </span>
+                     </li>
+                     <li class="list-group-item list-group-item-danger">
+                        <i class="glyphicon glyphicon-list"></i> Total IVA a pagar
+                        <span class="badge">
+                           {loop="$fsc->importe_total_iva_pagado()"}
+                              {loop="$fsc->importe_total_iva_a_pagar()"}
+                                 {$fsc->show_precio($value2["total"] - $value1["total"])}
+                              {/loop}
+                           {/loop}
+                        </span>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+
+      </div>
+      <!--Fin Fila 3 de widgets-->
+
+   </section>
+</div>
+
+{include="footer"}

@@ -1,0 +1,141 @@
+{include="header"}
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      document.f_custom_search.query.focus();
+   });
+</script>
+
+<div class="container-fluid" style="margin-top: 10px;">
+   <div class="row">
+      <div class="col-sm-6 col-xs-6">
+         <div class="btn-group hidden-xs">
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+               <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            {if="$fsc->page->is_default()"}
+            <a class="btn btn-sm btn-default active" href="{$fsc->url()}&amp;default_page=FALSE" title="desmarcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {else}
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}&amp;default_page=TRUE" title="marcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {/if}
+         </div>
+         <div class="btn-group">
+            <a class="btn btn-sm btn-success" href="index.php?page=contabilidad_nuevo_asiento">
+               <span class="glyphicon glyphicon-plus"></span>
+               <span class="hidden-xs">&nbsp; Nuevo</span>
+            </a>
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}&renumerar=TRUE">
+               <span class="glyphicon glyphicon-sort-by-attributes"></span>
+               <span class="hidden-xs">&nbsp; Renumerar</span>
+            </a>
+            {loop="$fsc->extensions"}
+               {if="$value->type=='button'"}
+               <a href="index.php?page={$value->from}{$value->params}" class="btn btn-sm btn-default">{$value->text}</a>
+               {/if}
+            {/loop}
+         </div>
+      </div>
+      <div class="col-sm-4 col-xs-6 text-right">
+         <h2 style="margin-top: 0px;">Asientos</h2>
+      </div>
+      <div class="col-sm-2 col-xs-12">
+         <form name="f_custom_search" action="{$fsc->url()}" method="post" class="form">
+            <div class="input-group">
+               <input class="form-control" type="text" name="query" value="{$fsc->query}" autocomplete="off" placeholder="Buscar">
+               <span class="input-group-btn">
+                  <button class="btn btn-primary hidden-sm" type="submit">
+                     <span class="glyphicon glyphicon-search"></span>
+                  </button>
+               </span>
+            </div>
+         </form>
+         <div class="visible-xs"><br/></div>
+      </div>
+   </div>
+</div>
+
+{if="$fsc->query!=''"}
+<ul class="nav nav-tabs" role="tablist">
+   <li class="active">
+      <a href="#">
+         <span class="glyphicon glyphicon-search"></span>
+         <span class="hidden-xs">&nbsp; Resultados de "{$fsc->query}"</span>
+      </a>
+   </li>
+</ul>
+{else}
+<ul class="nav nav-tabs" role="tablist">
+   <li{if="!isset($_GET['descuadrados'])"} class="active"{/if}>
+      <a href="{$fsc->url()}">
+         Todos <span class="badge">{$fsc->total_asientos()}</span>
+      </a>
+   </li>
+   <li{if="isset($_GET['descuadrados'])"} class="active"{/if}>
+      <a href="{$fsc->url()}&descuadrados=TRUE">
+         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+         <span class="hidden-xs">&nbsp; Descuadrados</span>
+      </a>
+   </li>
+</ul>
+{/if}
+
+<div class="table-responsive">
+   <table class="table table-hover">
+      <thead>
+         <tr>
+            <th></th>
+            <th class="text-left">Ejercicio + Número</th>
+            <th class="text-left">Concepto</th>
+            <th class="text-right">Importe</th>
+            <th class="text-right">Fecha</th>
+         </tr>
+      </thead>
+      {loop="$fsc->resultados"}
+      <tr class="clickableRow{if="$value->importe<=0"} bg-warning{/if}" href="{$value->url()}">
+         <td class="text-center">
+            {if="$value->editable"}
+            <span class="glyphicon glyphicon-pencil" title="editable"></span>
+            {/if}
+         </td>
+         <td>{$value->codejercicio} <a href="{$value->url()}">{$value->numero}</a></td>
+         <td>{$value->concepto}</td>
+         <td class="text-right">{$fsc->show_precio($value->importe)}</td>
+         <td class="text-right">
+            {if="$value->fecha==$fsc->today()"}<b>{$value->fecha}</b>{else}{$value->fecha}{/if}
+         </td>
+      </tr>
+      {else}
+      <tr class="warning">
+         <td></td>
+         <td colspan="5">
+            Ningún asiento encontrado.
+            {if="!isset($_GET['descuadrados'])"} Pulsa <b>Nuevo</b> para crear uno.{/if}
+         </td>
+      </tr>
+      {/loop}
+   </table>
+</div>
+
+<ul class="pager">
+   {if="$fsc->anterior_url()!=''"}
+   <li class="previous">
+      <a href="{$fsc->anterior_url()}">
+         <span class="glyphicon glyphicon-chevron-left"></span> &nbsp; Anteriores
+      </a>
+   </li>
+   {/if}
+   
+   {if="$fsc->siguiente_url()!=''"}
+   <li class="next">
+      <a href="{$fsc->siguiente_url()}">
+         Siguientes &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+   </li>
+   {/if}
+</ul>
+
+{include="footer"}

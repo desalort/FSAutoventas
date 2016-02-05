@@ -1,0 +1,372 @@
+{include="header"}
+
+{if="$fsc->recibo"}
+<script type="text/javascript">
+   function eliminar_pago(id)
+   {
+      if( confirm("¿Realmente desea eliminar el pago/devolución?") )
+      {
+         window.location.href = '{$fsc->url()}&deletep='+id;
+      }
+   }
+   $(document).ready(function() {
+      $("#b_eliminar").click(function(event) {
+         event.preventDefault();
+         if( confirm("¿Realmente desea eliminar el recibo?") )
+         {
+            window.location.href = 'index.php?page=ventas_recibos&delete={$fsc->recibo->idrecibo}';
+         }
+      });
+      document.f_recibo.importe.focus();
+   });
+</script>
+
+<form name="f_recibo" action="{$fsc->url()}" method="post" class="form">
+   <div class="container">
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="page-header">
+               <h1>
+                  <a class="btn btn-xs btn-default" href="index.php?page=ventas_recibos">
+                     <span class="glyphicon glyphicon-arrow-left"></span>
+                  </a>
+                  Recibo de venta
+                  <small>{$fsc->recibo->codigo}</small>
+                  <span class="btn-group">
+                     {if="$fsc->recibo->estado=='Pagado'"}
+                     <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-ok"></span>
+                        <span class="hidden-xs"> &nbsp; {$fsc->recibo->estado}</span>
+                        <span class="caret"></span>
+                     </button>
+                     {elseif="$fsc->recibo->estado=='Emitido'"}
+                     <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-time"></span>
+                        <span class="hidden-xs"> &nbsp; {$fsc->recibo->estado}</span>
+                        <span class="caret"></span>
+                     </button>
+                     {else}
+                     <button type="button" class="btn btn-sm btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        <span class="hidden-xs"> &nbsp; {$fsc->recibo->estado}</span>
+                        <span class="caret"></span>
+                     </button>
+                     {/if}
+                     <ul class="dropdown-menu" role="menu">
+                        {if="$fsc->recibo->estado=='Pagado'"}
+                        <li>
+                           <a href="#" data-toggle="modal" data-target="#modal_pago">
+                              <span class="glyphicon glyphicon-remove"></span> &nbsp; Devuelto
+                           </a>
+                        </li>
+                        {else}
+                        <li>
+                           <a href="#" data-toggle="modal" data-target="#modal_pago">
+                              <span class="glyphicon glyphicon-ok"></span> &nbsp; Pagado
+                           </a>
+                        </li>
+                        {/if}
+                     </ul>
+                  </span>
+               </h1>
+               <p class="help-block">
+                  Este recibo está marcado como <b>{$fsc->recibo->estado}</b>. Si quieres cambiarlo, haz
+                  clic en el botón <b>{$fsc->recibo->estado}</b>, es un desplegable.
+               </p>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-6">
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+               <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            <div class="btn-group">
+               <a class="btn btn-sm btn-default" href="{$fsc->factura->url()}">
+                  <span class="glyphicon glyphicon-eye-open"></span> &nbsp; Ver Factura
+               </a>
+               <a class="btn btn-sm btn-default" href="#" data-toggle="modal" data-target="#modal_imprimir">
+                  <span class="glyphicon glyphicon-print"></span>
+                  <span class="hidden-xs">&nbsp; Imprimir</span>
+               </a>
+               {loop="$fsc->extensions"}
+                  {if="$value->type=='button'"}
+                  <a href="index.php?page={$value->from}{$value->params}&id={$fsc->recibo->idrecibo}" class="btn btn-sm btn-default">{$value->text}</a>
+                  {/if}
+               {/loop}
+            </div>
+         </div>
+         <div class="col-sm-6 text-right">
+            <div class="btn-group">
+               {if="$fsc->allow_delete"}
+               <a id="b_eliminar" class="btn btn-sm btn-danger" href="#">
+                  <span class="glyphicon glyphicon-trash"></span>
+                  <span class="hidden-sm hidden-xs">&nbsp; Eliminar</span>
+               </a>
+               {/if}
+               <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                  <span class="hidden-xs">&nbsp; Guardar</span>
+               </button>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-12">
+            <br/>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-3">
+            <div class="form-group">
+               Factura:
+               <div class="form-control">{$fsc->factura->codigo}</div>
+            </div>
+         </div>
+         <div class="col-sm-4">
+            <div class="form-group">
+               Cliente:
+               <input type="text" name="nombrecliente" value="{$fsc->recibo->nombrecliente}" class="form-control" readonly=""/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Emitido:
+               <input type="text" name="emitido" value="{$fsc->recibo->fecha}" class="form-control datepicker" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Importe:
+               <div class="input-group">
+                  <span class="input-group-addon">{$fsc->simbolo_divisa()}</span>
+                  <input type="text" name="importe" value="{$fsc->recibo->importe}" class="form-control" autocomplete="off"/>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-2">
+            <div class="form-group">
+               Vencimiento:
+               <input type="text" name="fechav" value="{$fsc->recibo->fechav}" class="form-control datepicker" autocomplete="off" onchange="this.form.submit()"/>
+            </div>
+         </div>
+         <div class="col-sm-6">
+            <div class="form-group">
+               IBAN:
+               <input type="text" name="iban" value="{$fsc->recibo->iban}" class="form-control" autocomplete="off"/>
+               {if="$fsc->cliente"}
+               <p class="help-block">
+                  <a href="{$fsc->cliente->url()}">Añade una cuenta bancaria al cliente</a>
+                  y su IBAN y SWIFT/BIC se asignarán automáticamente a los recibos.
+               </p>
+               {/if}
+            </div>
+         </div>
+         <div class="col-sm-4">
+            <div class="form-group">
+               SWIFT/BIC:
+               <input type="text" name="swift" value="{$fsc->recibo->swift}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-12">
+            {if="$fsc->anticipo"}
+            <div class="alert alert-info">
+               Esta recibo se corresponde con el pago en la etapa de
+               <b>{$fsc->anticipo->fase}</b> el <b>{$fsc->anticipo->fecha}</b>:
+               {$fsc->anticipo->nota}
+            </div>
+            {/if}
+            {if="$fsc->pagos"}
+            <ul class="nav nav-tabs">
+               <li role="presentation" class="active">
+                  <a href="#">Asientos contables</a>
+               </li>
+            </ul>
+            <div class="table-responsive">
+               <table class="table table-hover">
+                  <thead>
+                     <tr>
+                        <th width="160">Fecha</th>
+                        <th>Tipo</th>
+                        <th>Subcuenta</th>
+                        <th class="text-right">Acciones</th>
+                     </tr>
+                  </thead>
+                  {loop="$fsc->pagos"}
+                  <tr{if="$value->tipo=='Pago'"} class="success"{else} class="danger"{/if}>
+                     <td><div class="form-control">{$value->fecha}</div></td>
+                     <td><div class="form-control">{$value->tipo}</div></td>
+                     <td><div class="form-control"><a href="{$value->subcuenta_url()}">{$value->codsubcuenta}</a></div></td>
+                     <td class="text-right">
+                        <div class="btn-group">
+                           {if="$value->idasiento"}
+                           <a href="{$value->asiento_url()}" class="btn btn-sm btn-default" title="Ver Asiento">
+                              <span class="glyphicon glyphicon-eye-open"></span>
+                           </a>
+                           {/if}
+                           <a class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminar_pago('{$value->idpagodevol}')">
+                              <span class="glyphicon glyphicon-trash"></span>
+                           </a>
+                        </div>
+                     </td>
+                  </tr>
+                  {/loop}
+               </table>
+            </div>
+            {/if}
+            {if="count($fsc->recibos)>1"}
+            <h3>Otros recibos de esta factura:</h3>
+            <div class="table-responsive">
+               <table class="table table-hover">
+                  <thead>
+                     <tr>
+                        <th width="190">Código</th>
+                        <th class="text-right" width="140">Importe</th>
+                        <th class="text-center" width="140">Emitido</th>
+                        <th class="text-center" width="140">Vencimiento</th>
+                        <th>Estado</th>
+                     </tr>
+                  </thead>
+                  {loop="$fsc->recibos"}
+                     {if="$value->idrecibo!=$fsc->recibo->idrecibo"}
+                     <tr class="clickableRow{if="$value->estado=='Pagado'"} success{elseif="$value->vencido()"} danger{else} warning{/if}" href="{$value->url()}">
+                        <td>
+                           <div class="form-control">
+                              <a href="{$value->url()}" target="_parent" class="cancel_clickable">{$value->codigo}</a>
+                           </div>
+                        </td>
+                        <td class="text-right">
+                           <div class="form-control">{$fsc->show_precio($value->importe, $value->coddivisa)}</div>
+                        </td>
+                        <td><div class="form-control text-center">{$value->fecha}</div></td>
+                        <td><div class="form-control text-center">{$value->fechav}</div></td>
+                        <td>
+                           <div class="input-group">
+                              <div class="form-control">{$value->estado}</div>
+                              <span class="input-group-addon">{$value->fechap}</span>
+                           </div>
+                        </td>
+                     </tr>
+                     {/if}
+                  {/loop}
+               </table>
+            </div>
+            {/if}
+         </div>
+      </div>
+   </div>
+</form>
+
+<form action="{$fsc->url()}" method="post" class="form">
+   <input type="hidden" name="nuevopago" value="TRUE"/>
+   <div class="modal fade" id="modal_pago" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+               </button>
+               <h4 class="modal-title">Cambiar estado</h4>
+            </div>
+            {if="$fsc->recibo->idremesa"}
+            <div class="modal-body">
+               <p class="help-block">
+                  Este recibo está dentro de la remesa <b>{$fsc->recibo->idremesa}</b>
+                  y sus modificaciones de estado están restringidas.
+               </p>
+               <a href="index.php?page=remesas&id={$fsc->recibo->idremesa}" class="btn btn-sm btn-info">
+                  <span class="glyphicon glyphicon-eye-open"></span>
+                  &nbsp; ver remesa
+               </a>
+            </div>
+            {else}
+            <div class="modal-body">
+               <div class="form-group">
+                  <select name="tipo" class="form-control">
+                     {if="$fsc->recibo->estado=='Pagado'"}
+                     <option value="Devolución">Devuelto</option>
+                     {else}
+                     <option value="Pago">Pagado</option>
+                     {/if}
+                  </select>
+               </div>
+               <div class="form-group">
+                  Fecha:
+                  <input type="text" name="fecha" value="{$fsc->today()}" class="form-control datepicker" autocomplete="off"/>
+               </div>
+               {if="$fsc->empresa->contintegrada"}
+                  {if="$fsc->subcuentas_pago"}
+                  <div class="form-group">
+                     Subcuenta de caja:
+                     <select name="codsubcuenta" class="form-control">
+                        {loop="$fsc->subcuentas_pago"}
+                        <option>{$value->codsubcuenta}</option>
+                        {/loop}
+                     </select>
+                     <p class="help-block">
+                        FacturaScripts busca las cuentas de caja en las
+                        <a href="index.php?page=cuentas_especiales">Cuentas especiales</a>.
+                     </p>
+                     <label>
+                        <input type="checkbox" name="generarasiento" value="TRUE" checked=""/>
+                        Generar asiento
+                     </label>
+                  </div>
+                  {else}
+                  <div class="alert alert-info">
+                     No se ha encontrado ninguna cuenta marcada como
+                     <a href="index.php?page=cuentas_especiales">Cuentas de caja</a>.
+                     Y por tanto no se generará el asiento de pago.
+                  </div>
+                  {/if}
+               {/if}
+            </div>
+            <div class="modal-footer">
+               <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                  <span class="hidden-xs">&nbsp; Guardar</span>
+               </button>
+            </div>
+            {/if}
+         </div>
+      </div>
+   </div>
+</form>
+
+<div class="modal fade" id="modal_imprimir">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Imprimir {#FS_FACTURA#}</h4>
+            <p class="help-block">
+               Más formatos en la <a href="https://www.facturascripts.com/store" target="_blank">tienda de plugins</a>.
+            </p>
+         </div>
+         <div class="modal-body">
+         {loop="$fsc->extensions"}
+            {if="$value->type=='pdf'"}
+            <a href="index.php?page={$value->from}{$value->params}&id={$fsc->recibo->idrecibo}" target="_blank" class="btn btn-block btn-default">
+               <span class="glyphicon glyphicon-print"></span> &nbsp; {$value->text}
+            </a>
+            {/if}
+         {/loop}
+         </div>
+         <div class="modal-footer">
+            <a href="index.php?page=admin_empresa#impresion" target="_blank">Opciones de impresión</a>
+         </div>
+      </div>
+   </div>
+</div>
+
+{else}
+<div class="thumbnail">
+   <img src="view/img/fuuu_face.png" alt="fuuuuu"/>
+</div>
+{/if}
+
+{include="footer"}

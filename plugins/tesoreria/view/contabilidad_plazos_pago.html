@@ -1,0 +1,101 @@
+{include="header"}
+
+{if="$fsc->forma_pago"}
+<script type="text/javascript">
+   function eliminar_plazo(id)
+   {
+      if( confirm("¿Realmente desea eliminar este plazo?") )
+         window.location.href = '{$fsc->url()}&delete='+id;
+   }
+</script>
+
+<div class="container">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <a class="btn btn-xs btn-default" href="index.php?page=contabilidad_formas_pago">
+                  <span class="glyphicon glyphicon-arrow-left"></span>
+               </a>
+               Plazos de pago
+               <small>{$fsc->forma_pago->descripcion}</small>
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+            </h1>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-6">
+         <p>
+            Estos plazos se usarán para generar los recibos de las facturas con
+            esta forma de pago asignada.
+         </p>
+         <p>
+            Si no hay ningún plazo asignado, se generará un recibo con el 100%
+            del importe y el plazo de la forma de pago.
+         </p>
+         <p>
+            Los días transcurridos empiezan a contar desde la fecha de la factura.
+         </p>
+      </div>
+      <div class="col-sm-6">
+         <div class="table-responsive">
+            <table class="table table-hover">
+               <thead>
+                  <tr>
+                     <th>Días transcurridos</th>
+                     <th>% del importe</th>
+                     <th width="120"></th>
+                  </tr>
+               </thead>
+               {loop="$fsc->plazos"}
+               <form action="{$fsc->url()}" method="post" class="form">
+                  <input type="hidden" name="id" value="{$value->id}"/>
+                  <tr>
+                     <td><input type="number" name="dias" value="{$value->dias}" class="form-control" autocomplete="off"/></td>
+                     <td><input type="text" name="aplazado" value="{$value->aplazado}" class="form-control" autocomplete="off"/></td>
+                     <td class="text-right">
+                        <div class="btn-group">
+                           {if="$fsc->allow_delete"}
+                           <a href="#" class="btn btn-sm btn-danger" onclick="eliminar_plazo('{$value->id}')" title="Eliminar">
+                              <span class="glyphicon glyphicon-trash"></span>
+                           </a>
+                           {/if}
+                           <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                              <span class="glyphicon glyphicon-floppy-disk"></span>
+                           </button>
+                        </div>
+                     </td>
+                  </tr>
+               </form>
+               {/loop}
+               {if="$fsc->pendiente>0"}
+               <form action="{$fsc->url()}" method="post" class="form">
+                  <tr class="bg-info">
+                     <td><input type="number" name="dias" value="0" class="form-control" autocomplete="off"/></td>
+                     <td><input type="text" name="aplazado" value="{$fsc->pendiente}" class="form-control" autocomplete="off"/></td>
+                     <td class="text-right">
+                        <div class="btn-group">
+                           <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                              <span class="glyphicon glyphicon-floppy-disk"></span>
+                           </button>
+                        </div>
+                     </td>
+                  </tr>
+               </form>
+               {/if}
+               <tr>
+                  <td>Los días transcurridos son desde la fecha de la factura.</td>
+                  <td></td>
+                  <td></td>
+               </tr>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
+{/if}
+
+{include="footer"}

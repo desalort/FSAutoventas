@@ -1,0 +1,232 @@
+{include="header"}
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      document.f_agrupar_pre.ac_proveedor.focus();
+      $("#ac_proveedor").autocomplete({
+         serviceUrl: '{$fsc->url()}',
+         paramName: 'buscar_proveedor',
+         onSelect: function (suggestion) {
+            if(suggestion)
+            {
+               if(document.f_agrupar_pre.codproveedor.value != suggestion.data && suggestion.data != '')
+               {
+                  document.f_agrupar_pre.codproveedor.value = suggestion.data;
+               }
+            }
+         }
+      });
+   });
+</script>
+
+<form name="f_agrupar_pre" action="{$fsc->url()}" method="post" class="form">
+   {if="$fsc->proveedor"}
+   <input type="hidden" name="codproveedor" value="{$fsc->proveedor->codproveedor}"/>
+   {else}
+   <input type="hidden" name="codproveedor"/>
+   {/if}
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="page-header">
+               <h1>
+                  <a class="btn btn-xs btn-default" href="index.php?page=compras_pedidos">
+                     <span class="glyphicon glyphicon-arrow-left"></span>
+                  </a>
+                  <span class="glyphicon glyphicon-duplicate"></span>
+                  Agrupar {#FS_PEDIDOS#}
+                  <a class="btn btn-xs btn-default" href="{$fsc->url()}" title="Recargar la página">
+                     <span class="glyphicon glyphicon-refresh"></span>
+                  </a>
+                  <span class="btn-group">
+                  {loop="$fsc->extensions"}
+                     {if="$value->type=='button'"}
+                     <a href="index.php?page={$value->from}{$value->params}" class="btn btn-xs btn-default">{$value->text}</a>
+                     {/if}
+                  {/loop}
+                  </span>
+               </h1>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-4">
+            <div class="form-group">
+               Proveedor:
+               <div class="input-group">
+                  {if="$fsc->proveedor"}
+                  <input class="form-control" type="text" name="ac_proveedor" value="{$fsc->proveedor->nombre}" id="ac_proveedor" placeholder="Buscar" autocomplete="off"/>
+                  {else}
+                  <input class="form-control" type="text" name="ac_proveedor" id="ac_proveedor" placeholder="Buscar" autocomplete="off"/>
+                  {/if}
+                  <span class="input-group-btn">
+                     <button class="btn btn-default" type="button" onclick="document.f_agrupar_pre.ac_proveedor.value='';document.f_agrupar_pre.ac_proveedor.focus();">
+                        <span class="glyphicon glyphicon-edit"></span>
+                     </button>
+                  </span>
+               </div>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            Serie:
+            <select name="codserie" class="form-control">
+            {loop="$fsc->serie->all()"}
+				   {if="$value->codserie==$fsc->codserie"}
+				   <option value="{$value->codserie}" selected="">{$value->descripcion}</option>
+				   {else}
+				   <option value="{$value->codserie}">{$value->descripcion}</option>
+				   {/if}
+				{/loop}
+            </select>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Desde:
+               <input type="text" name="desde" class="form-control datepicker" value="{$fsc->desde}" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Hasta:
+               <input type="text" name="hasta" class="form-control datepicker" value="{$fsc->hasta}" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <br/>
+            <button type="submit" class="btn btn-sm btn-primary" onclick="this.disabled=true;this.form.submit();">
+               <span class="glyphicon glyphicon-search"></span> &nbsp; Buscar
+            </button>
+         </div>
+      </div>
+   </div>
+</form>
+
+{if="$fsc->resultados"}
+<form id="f_agrupar_res" action="{$fsc->url()}" method="post" class="form">
+   <input type="hidden" name="petition_id" value="{$fsc->random_string()}"/>
+   <input type="hidden" name="codproveedor" value="{$fsc->proveedor->codproveedor}"/>
+   <input type="hidden" name="codserie" value="{$fsc->codserie}"/>
+   <input type="hidden" name="desde" value="{$fsc->desde}"/>
+   <input type="hidden" name="hasta" value="{$fsc->hasta}"/>
+   <div class="container-fluid">
+      <!--{$num=0}-->
+      {loop="$fsc->resultados"}
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <a href="{$value->url()}">{$value->codigo}</a> {$value->numproveedor}
+                  {$value->fecha} {$value->hora}
+               </div>
+               {if="$value->observaciones!=''"}
+               <div class="panel-body">{$value->observaciones}</div>
+               {/if}
+               <div class="table-responsive">
+                  <table class="table table-hover">
+                     <thead>
+                        <tr>
+                           <th>Artículo</th>
+                           <th class="text-right" width="100">Cantidad</th>
+                           <th class="text-right" width="100">Servido</th>
+                           <th class="text-right">Precio</th>
+                           <th class="text-right">Dto.</th>
+                           <th class="text-right">Total</th>
+                           <th class="text-right">IVA</th>
+                           <th class="text-right">Total+IVA</th>
+                        </tr>
+                     </thead>
+                     {loop="$value->get_lineas()"}
+                     <!--{$servido=$fsc->linea_servida($value2->idlinea)}-->
+                     <tr{if="$servido==$value2->cantidad"} class="bg-success"{elseif="$servido>0"} class="bg-warning"{/if}>
+                        <td>
+                           <label>
+                              <input type="checkbox" name="idl_{$num}" value="{$value2->idlinea}"{if="$servido!=$value2->cantidad"} checked="checked"{/if}/>
+                              &nbsp; <a href="{$value2->articulo_url()}">{$value2->referencia}</a> {$value2->descripcion}
+                           </label>
+                        </td>
+                        <td>
+                           <input type="number" name="cantidad_{$num}" value="{$value2->cantidad}" class="form-control text-right" autocomplete="off"/>
+                           <!--{$num=$num+1}-->
+                        </td>
+                        <td><div class="form-control text-right">{$servido}</div></td>
+                        <td class="text-right">{$fsc->show_precio($value2->pvpunitario, $value1->coddivisa)}</td>
+                        <td class="text-right">{$fsc->show_numero($value2->dtopor)} %</td>
+                        <td class="text-right">{$fsc->show_precio($value2->pvptotal, $value1->coddivisa)}</td>
+                        <td class="text-right">{$fsc->show_numero($value2->iva)} %</td>
+                        <td class="text-right">{$fsc->show_precio($value2->total_iva(), $value1->coddivisa)}</td>
+                     </tr>
+                     {/loop}
+                     <tr>
+                        <td colspan="5">
+                           <label>
+                              <input type="checkbox" name="aprobado[]" value="{$value->idpedido}" checked="checked"/>
+                              &nbsp; marcar {#FS_PEDIDO#} como aprobado
+                           </label>
+                        </td>
+                        <td class="text-right"><b>{$fsc->show_precio($value->neto, $value->coddivisa)}</b></td>
+                        <td class="text-right"><b>{$fsc->show_precio($value->totaliva, $value->coddivisa)}</b></td>
+                        <td class="text-right"><b>{$fsc->show_precio($value->total, $value->coddivisa)}</b></td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+      {/loop}
+      <div class="row">
+         <div class="col-sm-12 text-right">
+            <button type="submit" class="btn btn-sm btn-primary" onclick="this.disabled=true;this.form.submit();">
+               <span class="glyphicon glyphicon-file"></span> &nbsp; Generar {#FS_ALBARAN#}
+            </button>
+         </div>
+      </div>
+   </div>
+</form>
+{elseif="$fsc->proveedor"}
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="panel panel-info">
+            <div class="panel-heading">
+               <h3 class="panel-title">Ayuda</h3>
+            </div>
+            <div class="panel-body">
+               No se han encontrado resultados para esta búsqueda.
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{else}
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <h3 class="panel-title">Ayuda</h3>
+            </div>
+            <div class="panel-body">
+               Con esta herramienta puedes buscar y agrupar varios {#FS_PEDIDOS#}
+               de un mismo proveedor y generar un único {#FS_ALBARAN#}.
+               Si hay {#FS_PEDIDOS#} pendientes aparecerán los proveedores aquí debajo
+               para ahorrarte clics ;-)
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      {loop="$fsc->pendientes()"}
+      <div class="col-sm-4">
+         <a href="{$fsc->url()}&codproveedor={$value['codproveedor']}&codserie={$value['codserie']}" class="btn btn-sm btn-block {if="$value['num']>1"}btn-info{else}btn-default{/if}">
+            <span class="glyphicon glyphicon-user"></span>
+            &nbsp; {$value['nombre']}
+            {if="$value['num']>1"}&nbsp; ({$value['num']}){/if}
+         </a>
+         <br/>
+      </div>
+      {/loop}
+   </div>
+</div>
+{/if}
+
+{include="footer"}

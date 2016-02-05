@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : catalogo_familia.xml
+    Description:
+-->
+<tabla>
+    <columna>
+      <nombre>id</nombre>
+      <tipo>serial</tipo>
+      <nulo>NO</nulo>
+      <defecto>nextval('autoventas_familia_id_seq'::regclass)</defecto>
+   </columna>
+   <columna>
+      <nombre>codigo</nombre>
+      <tipo>character varying(25)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>visible</nombre>
+      <tipo>boolean</tipo>
+      <nulo>YES</nulo>
+      <defecto>false</defecto>
+   </columna>
+   <columna>
+      <nombre>nombre</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>descripcion</nombre>
+      <tipo>text</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>imagen</nombre>
+      <tipo>text</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <restriccion>
+      <nombre>autoventas_familia_pkey</nombre>
+      <consulta>PRIMARY KEY (id)</consulta>
+   </restriccion>
+</tabla>

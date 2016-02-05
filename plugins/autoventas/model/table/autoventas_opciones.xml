@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : catalogo_opciones.xml
+    Description:
+-->
+<tabla>
+    <columna>
+      <nombre>id</nombre>
+      <tipo>serial</tipo>
+      <nulo>NO</nulo>
+      <defecto>nextval('autoventas_opciones_id_seq'::regclass)</defecto>
+   </columna>
+   <columna>
+      <nombre>url</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>activo</nombre>
+      <tipo>boolean</tipo>
+      <nulo>YES</nulo>
+      <defecto>false</defecto>
+   </columna>
+   <columna>
+      <nombre>cron</nombre>
+      <tipo>boolean</tipo>
+      <nulo>YES</nulo>
+      <defecto>false</defecto>
+   </columna>
+   <columna>
+      <nombre>tiempocron</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+      <defecto>0</defecto>
+   </columna>
+    <columna>
+      <nombre>last_sincro</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+      <defecto>0</defecto>
+   </columna>
+   <columna>
+      <nombre>ftp_url</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>ftp_dir</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>ftp_user</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>ftp_pass</nombre>
+      <tipo>character varying(250)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <restriccion>
+      <nombre>autoventas_opciones_pkey</nombre>
+      <consulta>PRIMARY KEY (id)</consulta>
+   </restriccion>
+</tabla>

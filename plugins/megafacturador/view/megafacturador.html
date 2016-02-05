@@ -1,0 +1,131 @@
+{include="header"}
+
+{if="$fsc->url_recarga"}
+<script type="text/javascript">
+   function recargar()
+   {
+      window.location.href = '{$fsc->url_recarga}';
+   }
+   $(document).ready(function() {
+      setTimeout(recargar, 1000);
+   });
+</script>
+{/if}
+
+<script type="text/javascript">
+   function facturar()
+   {
+      document.f_facturador.procesar.value = 'TRUE';
+      document.f_facturador.submit();
+   }
+</script>
+
+<div class="container">
+   <form name="f_facturador" class="form" action="{$fsc->url()}" method="post">
+      <input type="hidden" name="procesar" value="FALSE"/>
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="page-header">
+               <h1>
+                  <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                  MegaFacturador
+                  <a href="{$fsc->url()}" class="btn btn-xs btn-default" title="Recargar la página">
+                     <span class="glyphicon glyphicon-refresh"></span>
+                  </a>
+                  <span class="btn-group">
+                  {loop="$fsc->extensions"}
+                     {if="$value->type=='button'"}
+                     <a href="index.php?page={$value->from}{$value->params}" class="btn btn-xs btn-default">{$value->text}</a>
+                     {/if}
+                  {/loop}
+                  </span>
+               </h1>
+               <p class="help-block">
+                  Elige qué es lo que quieres facturar, cómo y pulsa el botón empezar.
+               </p>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-4">
+            <div class="checkbox">
+               <label>
+                  <input type="checkbox" name="ventas" value="TRUE"{if="$fsc->opciones['ventas']"} checked=""{/if}/>
+                  {#FS_ALBARANES#} de venta pendientes <span class="badge">{$fsc->total_pendientes_venta()}</span>
+               </label>
+            </div>
+            <div class="checkbox">
+               <label>
+                  <input type="checkbox" name="compras" value="TRUE"{if="$fsc->opciones['compras']"} checked=""{/if}/>
+                  {#FS_ALBARANES#} de compra pendientes <span class="badge">{$fsc->total_pendientes_compra()}</span>
+               </label>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Serie:
+               <select name="codserie" class="form-control" onchange="this.form.submit();">
+                  <option value="">Todas</option>
+                  <option value="">------</option>
+                  {loop="$fsc->serie->all()"}
+                     {if="$fsc->opciones['codserie']==$value->codserie"}
+                     <option value="{$value->codserie}" selected="">{$value->descripcion}</option>
+                     {else}
+                     <option value="{$value->codserie}">{$value->descripcion}</option>
+                     {/if}
+                  {/loop}
+               </select>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Facturar con fecha:
+               <select name="fecha" class="form-control">
+                  <option value="hoy">Hoy</option>
+                  {if="$fsc->opciones['fecha']=='albaran'"}
+                  <option value="albaran" selected="">El mismo día del {#FS_ALBARAN#}</option>
+                  {else}
+                  <option value="albaran">El mismo día del {#FS_ALBARAN#}</option>
+                  {/if}
+               </select>
+            </div>
+         </div>
+         <div class="col-sm-2 text-right">
+            <br/>
+            <button class="btn btn-sm btn-primary" type="button" onclick="this.disabled=true;facturar()">
+               <span class="glyphicon glyphicon-play"></span> &nbsp; Empezar
+            </button>
+         </div>
+      </div>
+   </form>
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h2>
+               <span class="glyphicon glyphicon-info-sign"></span> Otras opciones
+            </h2>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-3">
+         <a href="{$fsc->url()}&genasientos=TRUE" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-paperclip"></span>
+            &nbsp; Generar asientos
+            {if="$fsc->numasientos>0"}
+            <span class="badge">{$fsc->numasientos}</span>
+            {/if}
+         </a>
+      </div>
+      <div class="col-sm-9">
+         <p class="help-block">
+            Genera los asientos de las facturas que no tengan. Si tienes activada
+            la contabilidad integrada, los asientos contables de las facturas se
+            generan automáticamente, pero si por algún motivo tienes facturas sin
+            asientos o quieres generarlos ahora, simplemente pulsa el botón.
+         </p>
+      </div>
+   </div>
+</div>
+
+{include="footer"}

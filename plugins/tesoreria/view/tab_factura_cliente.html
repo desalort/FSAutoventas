@@ -1,0 +1,116 @@
+{include="header2"}
+
+{if="$fsc->pagada_previamente"}
+<br/>
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="alert alert-info">
+            Esta factura fué marcada como pagada previamente, por eso no se generan
+            los recibos.
+         </div>
+      </div>
+   </div>
+   <div>
+      <div class="col-sm-12">
+         <a href="{$fsc->url()}&id={$fsc->factura->idfactura}&regenerar=TRUE" class="btn btn-xs btn-warning">
+            <span class="glyphicon glyphicon-duplicate"></span> &nbsp;
+            Generar recibos igualmente
+         </a>
+      </div>
+   </div>
+</div>
+{else}
+<div class="table-responsive">
+   <table class="table table-hover">
+      <thead>
+         <tr>
+            <th width="120"></th>
+            <th width="190">Código</th>
+            <th class="text-right" width="140">Importe</th>
+            <th class="text-center" width="140">Emitido</th>
+            <th class="text-center" width="140">Vencimiento</th>
+            <th>Estado</th>
+         </tr>
+      </thead>
+      <!--{$total=0}-->
+      {loop="$fsc->resultados"}
+      <tr class="clickableRow{if="$value->estado=='Pagado'"} success{elseif="$value->vencido()"} danger{else} warning{/if}" href="{$value->url()}" target="_parent">
+         <td class="text-center">
+            {if="$value->estado=='Pagado'"}
+            <div class="form-control">
+               <span class="glyphicon glyphicon-ok" title="El recibo está pagado"></span>
+            </div>
+            {/if}
+         </td>
+         <td>
+            <div class="form-control">
+               <a href="{$value->url()}" target="_parent" class="cancel_clickable">{$value->codigo}</a>
+            </div>
+         </td>
+         <td class="text-right">
+            <div class="form-control">{$fsc->show_precio($value->importe, $value->coddivisa)}</div>
+            <!--{$total=$total+$value->importe}-->
+         </td>
+         <td><div class="form-control text-center">{$value->fecha}</div></td>
+         <td><div class="form-control text-center">{$value->fechav}</div></td>
+         <td>
+            <div class="input-group">
+               <div class="form-control">{$value->estado}</div>
+               <span class="input-group-addon">{$value->fechap}</span>
+            </div>
+         </td>
+      </tr>
+      {/loop}
+      {if="abs($fsc->factura->total-$total)>.01"}
+      <form action="{$fsc->url()}" method="post" class="form" target="_parent">
+         <tr class="info">
+            <td></td>
+            <td>
+               <input type="hidden" name="idfactura" value="{$fsc->factura->idfactura}"/>
+               <div class="form-control">Nuevo</div>
+            </td>
+            <td>
+               <input type="text" name="importe" value="{function="round($fsc->factura->total-$total,FS_NF0)"}" class="form-control text-right" autocomplete="off"/>
+            </td>
+            <td>
+               <input type="text" name="fecha" value="{$fsc->today()}" class="form-control datepicker text-center" autocomplete="off"/>
+            </td>
+            <td>
+               <input type="text" name="fechav" value="{$fsc->vencimiento}" class="form-control datepicker text-center" autocomplete="off"/>
+            </td>
+            <td>
+               <div class="input-group">
+                  <div class="form-control">Emitido</div>
+                  <span class="input-group-btn">
+                     <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                     </button>
+                  </span>
+               </div>
+            </td>
+         </tr>
+      </form>
+      {/if}
+   </table>
+</div>
+{/if}
+
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <h3>¿Quieres generar varios recibos para una factura?</h3>
+         <p class="help-block">
+            Puedes hacerlo de forma automática modificando las
+            <a href="index.php?page=contabilidad_formas_pago" target="_parent">formas de pago</a>,
+            establece los plazos que desées y se generará un recibo para cada plazo.
+         </p>
+         <p class="help-block">
+            También puedes hacerlo de forma manual, modifica el importe del recibo
+            y así podrás añadir más.
+         </p>
+      </div>
+   </div>
+</div>
+
+{include="footer2"}

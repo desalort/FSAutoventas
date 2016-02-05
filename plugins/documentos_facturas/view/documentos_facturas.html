@@ -1,0 +1,44 @@
+{include="header2"}
+
+<div class="container-fluid">
+   <div class="row" style="margin-top: 15px; margin-bottom: 15px;">
+      {loop="$fsc->documentos"}
+         <div class="col-sm-4">
+            <div class="btn-group">
+               <a href="{$value['fullname']}" target="_blank" class="btn btn-bg btn-default">
+                  <span class="glyphicon glyphicon-file" aria-hidden="true"></span> &nbsp; {$value['name']}
+               </a>
+               <a href="#" class="btn btn-bg btn-default" title="Eliminar" onclick="delete_documento('{$value['name']}')">
+                  <span class="glyphicon glyphicon-trash"></span>
+               </a>
+            </div>
+            <p class="help-block">
+               Tamaño: {$value['filesize']} &nbsp;
+               <span class="glyphicon glyphicon-calendar"></span> {$value['date']}
+            </p>
+         </div>
+      {/loop}
+   </div>
+   <div class="row">
+      <div class="col-sm-4">
+         <form enctype="multipart/form-data" action="{$fsc->url()}" method="post" class="form">
+            <input type="hidden" name="upload" value="TRUE"/>
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h3 class="panel-title">Añadir un documento</h3>
+               </div>
+               <div class="panel-body">
+                  <div class="form-group">
+                     <input name="fdocumento" type="file"/>
+                  </div>
+                  <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+                     <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+                  </button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+{include="footer2"}

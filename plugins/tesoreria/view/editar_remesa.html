@@ -1,0 +1,265 @@
+{include="header"}
+
+{if="$fsc->remesa"}
+<script type="text/javascript">
+   function fs_marcar_todo()
+   {
+      $("#f_add_recibos input[name='addrecibo[]']").prop('checked', true);
+   }
+   function fs_marcar_nada()
+   {
+      $("#f_add_recibos input[name='addrecibo[]']").prop('checked', false);
+   }
+   $(document).ready(function() {
+      $("#b_eliminar").click(function(event) {
+         event.preventDefault();
+         if( confirm("¿Realmente desea eliminar la remesa?") )
+         {
+            window.location.href = '{$fsc->url()}&delete={$fsc->remesa->idremesa}';
+         }
+      });
+   });
+</script>
+
+<div class="container">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}">
+                  <span class="glyphicon glyphicon-arrow-left"></span>
+               </a>
+               Remesa
+               <small>{$fsc->remesa->idremesa}</small>
+               <a class="btn btn-xs btn-default" href="{$fsc->remesa->url()}" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+               {if="$fsc->remesa->estado=='Realizada'"}
+               <a class="btn btn-xs btn-success" href="{$fsc->remesa->url()}&pagar=TRUE" title="Marcar todos los recibos como pagados">
+                  <span class="glyphicon glyphicon-check"></span>
+                  <span class="hidden-xs hidden-sm">&nbsp; Marcar como pagados</span>
+               </a>
+               {/if}
+            </h1>
+            <p class="help-block">
+               Esta remesa de <b>{$fsc->show_precio($fsc->remesa->total)}</b>
+               {if="$fsc->cuentab_s"}
+               se cargará a la cuenta <b>{$fsc->cuentab_s->descripcion}</b>
+               con IBAN: {$fsc->remesa->iban}
+               {else}
+               se cargará a la cuenta con IBAN: {$fsc->remesa->iban}
+               y SWIFT/BIC: {$fsc->remesa->swift}
+               {/if}
+            </p>
+            <p class="help-block">
+               <span class="glyphicon glyphicon-question-sign"></span>
+               Añade los recibos que quieras y pulsa el botón decargar para obtener el
+               <b>archivo xml</b> necesario para luego añadirlo en la sección remesas
+               de tu banco.
+               La remesa pasará a estado <b>en trámite</b>. Una vez tengas constancia
+               del cobro, cambia el estado de la remesa a <b>realizada</b> y te
+               aparecerá el botón <b>marcar todos los recibos como pagados</b>.
+            </p>
+         </div>
+      </div>
+   </div>
+   <form action="{$fsc->remesa->url()}" method="post" class="form">
+      <div class="row">
+         <div class="col-sm-4">
+            <div class="form-group">
+               Descripción:
+               <input class="form-control" type="text" name="descripcion" value="{$fsc->remesa->descripcion}" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Fecha:
+               <div class="input-group">
+                  <input class="form-control datepicker" type="text" name="fecha" value="{$fsc->remesa->fecha}" autocomplete="off"/>
+                  <span class="input-group-addon">
+                     <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+               </div>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Fecha cargo:
+               <div class="input-group">
+                  <input class="form-control datepicker" type="text" name="fechacargo" value="{$fsc->remesa->fechacargo}" autocomplete="off"/>
+                  <span class="input-group-addon">
+                     <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+               </div>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group{if="!$fsc->remesa->editable()"} has-warning{/if}">
+               Estado:
+               <select name="estado" class="form-control">
+                  <option value="Preparada"{if="$fsc->remesa->estado=='Preparada'"} selected=""{/if}>Preparada</option>
+                  <option value="En trámite"{if="$fsc->remesa->estado=='En trámite'"} selected=""{/if}>En trámite</option>
+                  <option value="Revisar"{if="$fsc->remesa->estado=='Revisar'"} selected=""{/if}>Revisar</option>
+                  <option value="Realizada"{if="$fsc->remesa->estado=='Realizada'"} selected=""{/if}>Realizada</option>
+               </select>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-6">
+            <div class="btn-group">
+               <a class="btn btn-sm btn-primary" href="{$fsc->remesa->url()}&download=TRUE" title="Descargar remesa">
+                  <span class="glyphicon glyphicon-download-alt"></span>
+                  <span class="hidden-xs hidden-sm">&nbsp; Descargar</span>
+               </a>
+               {loop="$fsc->extensions"}
+                  {if="$value->type=='button'"}
+                  <a href="index.php?page={$value->from}{$value->params}" class="btn btn-xs btn-default">{$value->text}</a>
+                  {/if}
+               {/loop}
+            </div>
+         </div>
+         <div class="col-sm-6 text-right">
+            <div class="btn-group">
+               {if="$fsc->allow_delete"}
+               <a id="b_eliminar" class="btn btn-sm btn-danger" href="#" title="Eliminar remesa">
+                  <span class="glyphicon glyphicon-trash"></span>
+                  <span class="hidden-xs hidden-sm">&nbsp; Eliminar</span>
+               </a>
+               {/if}
+               <button class="btn btn-sm btn-primary" type="button" onclick="this.disabled=true;this.form.submit();">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                  <span class="hidden-xs hidden-sm">&nbsp; Guardar</span>
+               </button>
+            </div>
+         </div>
+      </div>
+   </form>
+   <div class="row">
+      <div class="col-sm-12">
+         <br/>
+         <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+               <a href="#incluidos" aria-controls="idcluidos" role="tab" data-toggle="tab">Incluidos</a>
+            </li>
+            <li role="presentation">
+               <a href="#anyadir" aria-controls="anyadir" role="tab" data-toggle="tab">Añadir</a>
+            </li>
+         </ul>
+         <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="incluidos">
+               <div class="table-responsive">
+                  <table class="table table-hover">
+                     <thead>
+                        <tr>
+                           <th class="text-left">Código</th>
+                           <th class="text-left">Cliente</th>
+                           <th class="text-left">Estado</th>
+                           <th class="text-left">Fecha</th>
+                           <th class="text-left">Fecha Vencimiento</th>
+                           <th class="text-right">Importe</th>
+                           <th></th>
+                        </tr>
+                     </thead>
+                     {loop="$fsc->resultados"}
+                     <tr{if="$value->vencido()"} class="danger"{/if}>
+                        <td><a href="{$value->url()}">{$value->codigo}</a></td>
+                        <td>{$value->nombrecliente}</td>
+                        <td>{$value->estado}</td>
+                        <td>{$value->fecha}</td>
+                        <td>{$value->fechav}</td>
+                        <td class="text-right">{$fsc->show_precio($value->importe, $value->coddivisa)}</td>
+                        <td class="text-right">
+                           {if="$fsc->remesa->editable() AND $fsc->allow_delete"}
+                           <a class="btn btn-xs btn-danger" href="{$fsc->remesa->url()}&sacar={$value->idrecibo}" title="Quitar recibo">
+                              <span class="glyphicon glyphicon-remove"></span>
+                           </a>
+                           {/if}
+                        </td>
+                     </tr>
+                     {else}
+                     <tr class="warning">
+                        <td colspan="7">No hay ningún recibo incluido en esta remesa.</td>
+                     </tr>
+                     {/loop}
+                  </table>
+               </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="anyadir">
+               {if="$fsc->remesa->editable()"}
+               <form id="f_add_recibos" action="{$fsc->remesa->url()}" method="post" class="form">
+                  <div class="table-responsive">
+                     <table class="table table-hover">
+                        <thead>
+                           <tr>
+                              <th></th>
+                              <th class="text-left">Código</th>
+                              <th class="text-left">Cliente</th>
+                              <th class="text-left">IBAN</th>
+                              <th class="text-left">Fecha</th>
+                              <th class="text-left">Fecha Vencimiento</th>
+                              <th class="text-right">Importe</th>
+                           </tr>
+                        </thead>
+                        {loop="$fsc->recibos_disponibles()"}
+                        <tr>
+                           <td>
+                              {if="$value->iban"}
+                              <input type="checkbox" name="addrecibo[]" value="{$value->idrecibo}" checked=""/>
+                              {else}
+                              <span class="glyphicon glyphicon-exclamation-sign" title="IBAN desconocido"></span>
+                              {/if}
+                           </td>
+                           <td><a href="{$value->url()}">{$value->codigo}</a></td>
+                           <td>{$value->nombrecliente}</td>
+                           <td{if="!$value->iban"} class="danger"{/if}>
+                              {if="$value->iban"}{$value->iban}{else}<a href="{$value->url()}">desconocido</a>{/if}
+                           </td>
+                           <td>{$value->fecha}</td>
+                           <td>{$value->fechav}</td>
+                           <td class="text-right">{$fsc->show_precio($value->importe, $value->coddivisa)}</td>
+                        </tr>
+                        {else}
+                        <tr class="warning">
+                           <td colspan="7">Ningún recibo disponible.</td>
+                        </tr>
+                        {/loop}
+                     </table>
+                  </div>
+                  <p class="help-block">
+                     <span class="glyphicon glyphicon-question-sign"></span>
+                     Solamente puedes añadir recibos no pagados, con fecha de vencimiento
+                     anterior a la fecha de cargo de la remesa y que tengan un IBAN asociado.
+                     No se puede dar orden de cobro al banco sobre un número de cuenta desconocido.
+                  </p>
+                  <div class="text-right">
+                     <div class="pull-left">
+                        <div class="btn-group">
+                           <button class="btn btn-sm btn-default" type="button" onclick="fs_marcar_todo()" title="Marcar todo">
+                              <span class="glyphicon glyphicon-check"></span>
+                           </button>
+                           <button class="btn btn-sm btn-default" type="button" onclick="fs_marcar_nada()" title="Desmarcar todo">
+                              <span class="glyphicon glyphicon-unchecked"></span>
+                           </button>
+                        </div>
+                     </div>
+                     <button class="btn btn-sm btn-success" type="button" onclick="this.disabled=true;this.form.submit();">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span class="hidden-xs hidden-sm">&nbsp; Añadir</span>
+                     </button>
+                  </div>
+               </form>
+               {else}
+               <div class='alert alert-warning'>
+                  <span class="glyphicon glyphicon-exclamation-sign"></span>
+                  Solamente se pueden hacer cambios en remesas <b>preparadas</b>.
+               </div>
+               {/if}
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{/if}
+
+{include="footer"}

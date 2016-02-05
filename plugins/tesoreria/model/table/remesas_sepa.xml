@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : remesas_sepa.xml
+    Description:
+        Estructura de la tabla remesas_sepa.
+-->
+<tabla>
+   <columna>
+      <nombre>codcuenta</nombre>
+      <tipo>character varying(6)</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>iban</nombre>
+      <tipo>character varying(34)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>swift</nombre>
+      <tipo>character varying(11)</tipo>
+   </columna>
+   <columna>
+      <nombre>coddivisa</nombre>
+      <tipo>character varying(3)</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>estado</nombre>
+      <tipo>character varying(15)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>fecha</nombre>
+      <tipo>date</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>fechacargo</nombre>
+      <tipo>date</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>idremesa</nombre>
+      <tipo>serial</tipo>
+      <nulo>NO</nulo>
+      <defecto>nextval('remesas_sepa_idremesa_seq'::regclass)</defecto>
+   </columna>
+   <columna>
+      <nombre>total</nombre>
+      <tipo>double precision</tipo>
+      <nulo>NO</nulo>
+   </columna>
+   <columna>
+      <nombre>tasaconv</nombre>
+      <tipo>double precision</tipo>
+      <nulo>NO</nulo>
+      <defecto>1</defecto>
+   </columna>
+   <columna>
+      <nombre>descripcion</nombre>
+      <tipo>text</tipo>
+   </columna>
+   <columna>
+      <nombre>codpago</nombre>
+      <tipo>character varying(10)</tipo>
+   </columna>
+   <restriccion>
+      <nombre>remesas_sepa_pkey</nombre>
+      <consulta>PRIMARY KEY (idremesa)</consulta>
+   </restriccion>
+</tabla>

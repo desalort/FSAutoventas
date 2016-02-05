@@ -1,0 +1,18 @@
+Pantalla de inicio con información importante resumida, puede ser una alternativa de
+página de inicio con accesos rápidos a funcionalidades concretas.
+<br/>
+<br/>
+<b>Incluye:</b>
+<br/>
+- <b>Soporte para facturación base:</b> muestra total de albaranes y facturas realizados,
+total de pendientes y total de aprobados, así como total de facturas pendientes de
+cobrar/pagar y total de cobradas/pagadas. Permite acceder a esta información en 1 click.
+<br/>
+- <b>Soporte para presupuestos y pedidos:</b> muestra total de presupuestos y pedidos
+realizados, total de pendientes, total de rechazados y total de aprobados.
+<br/>
+- <b>Soporte para servicios:</b> permite crear un servicio nuevo, listar y totalizar los
+distintos tipos de servicios. Permite acceder a esta información en 1 click.
+<br/>
+- <b>Información resumida sobre facturación:</b> total de facturas de ventas y compras,
+total de albaranes pendientes de facturar y total de IVA a pagar.

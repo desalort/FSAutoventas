@@ -1,0 +1,75 @@
+{include="header2"}
+
+<form action="{$fsc->url()}" method="get" class="post">
+    <input type="hidden" name="cod" value="{$fsc->codFamilia}"/>
+    <input type="hidden" name="page" value="autoventas_extensiones"/>
+    <input type="hidden" name="action" value="1"/>
+    <input type="hidden" name="cat" value="fam"/>
+    <div class="container-fluid">
+        <div class="row" style="padding-top: 10px;">
+                  <div class="col-sm-6">
+                     <div class="form-group">
+                        Nombre de la Familia en catálogo:
+                        <input class="form-control" type="text" name="fam_nombre" maxlength="18" value="{$fsc->familia['nombre']}" autocomplete="off"/>
+                     </div>
+                  </div>
+            <div class="col-sm-6">
+                                             <div class="form-group">
+                                                   <div class="checkbox">
+                                                     <label>
+                        <input type="checkbox" id="fam_visible" name="fam_visible" value="1"
+                               {if="$fsc->familia['visible']==1"} checked{/if}/>
+                        Visible en catálogo
+                                                 </label>
+                                             </div>
+                        
+                     </div>
+            </div>
+            <div class="clearfix"></div>
+                  <div class="col-sm-6">
+                     <div class="form-group">
+                        Descripción:
+                        <textarea name="fam_descripcion" class="form-control" rows="4">{$fsc->familia['descripcion']}</textarea>
+                     </div>
+                  </div>
+            <div class="clearfix"></div>
+                <div class="col-sm-12 text-right">
+                     <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+                        <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+                     </button>
+                    
+                </div>
+            
+        </div>
+    </div>
+</form>
+
+<form action="{$fsc->url()}&page=autoventas_extensiones" enctype="multipart/form-data" method="post" class="form">
+<input type="hidden" name="cod" value="{$fsc->codFamilia}"/>
+<input type="hidden" name="action" value="2"/>
+<input type="hidden" name="cat" value="fam"/>
+<div class="form-group">
+Foto: 
+    {if="$fsc->imagen_url()"}
+    <div class="thumbnail">
+        <img src="{$fsc->imagen_url()}" alt="{$fsc->familia['nombre']}"/>
+        <div class="caption">
+            <p>Esta imagen está guardada en {$fsc->imagen_url()}</p>
+        </div>
+    </div>
+    {else}
+    <div class="form-group">
+        <input type="file" name="fimagen" accept="image/jpeg, image/png"/>
+    </div>
+    {/if}   
+</div>
+{if="$fsc->imagen_url()"}
+<a class="btn btn-sm btn-danger" href="{$fsc->url()}&cod={$fsc->codFamilia}&action=3&cat=fam">
+        <span class="glyphicon glyphicon-trash"></span> &nbsp; Eliminar
+    </a>
+{else}
+    <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+        <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+</button>
+{/if}
+</form>

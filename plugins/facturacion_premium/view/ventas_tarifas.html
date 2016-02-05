@@ -1,0 +1,145 @@
+{include="header"}
+
+<div class="container">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <span class="glyphicon glyphicon-usd"></span>
+               Tarifas
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+               <span class="btn-group">
+                  {loop="$fsc->extensions"}
+                     {if="$value->type=='button'"}
+                     <a href="index.php?page={$value->from}{$value->params}" class="btn btn-xs btn-default">{$value->text}</a>
+                     {/if}
+                  {/loop}
+               </span>
+            </h1>
+            <div class="help-block">
+               Define descuentos, márgenes o precios específicos de venta para <b>grupos de clientes</b>.
+            </div>
+         </div>
+         <div class="table-responsive">
+            <table class="table table-hover">
+               <thead>
+                  <tr>
+                     <th class="text-left">Código + Nombre</th>
+                     <th class="text-left">Aplicar</th>
+                     <th class="text-right">Grupos de clientes</th>
+                  </tr>
+               </thead>
+               {loop="$fsc->tarifa->all()"}
+               <tr class="clickableRow" href="{$value->url()}">
+                  <td><a href="{$value->url()}">{$value->codtarifa}</a> {$value->nombre}</td>
+                  <td>{$value->diff()}</td>
+                  <td class="text-right">
+                     {loop="$fsc->get_grupos_tar($value->codtarifa)"}
+                     {$value->nombre},
+                     {else}
+                     -
+                     {/loop}
+                  </td>
+               </tr>
+               {else}
+               <tr class="warning">
+                  <td colspan="5">No hay ninguna tarifa definida.</td>
+               </tr>
+               {/loop}
+            </table>
+         </div>
+         <br/>
+         <form name="f_nueva_tarifa" action="{$fsc->url()}" method="post" class="form">
+            <div class="panel panel-info">
+               <div class="panel-heading">
+                  <h3 class="panel-title">Nueva tarifa</h3>
+               </div>
+               <div class="panel-body">
+                  <div class="container-fluid">
+                     <div class="row">
+                        <div class="col-sm-2">
+                           <div class="form-group">
+                              Código
+                              <input class="form-control" type="text" name="codtarifa" value="{$fsc->tarifa->get_new_codigo()}" maxlength="6" autocomplete="off"/>
+                           </div>
+                        </div>
+                        <div class="col-sm-3">
+                           <div class="form-group">
+                              Nombre
+                              <input class="form-control" type="text" name="nombre" maxlength="50" placeholder="Nueva Tarifa" autocomplete="off"/>
+                           </div>
+                        </div>
+                        <div class="col-sm-3">
+                           <div class="form-group">
+                              Aplicar
+                              <select name="aplicar_a" class="form-control">
+                                 <option value="pvp">Precio de venta - X% - Y</option>
+                                 <option value="coste">Precio de coste + X% + Y</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-sm-2">
+                           <div class="form-group">
+                              X%
+                              <input class="form-control" type="number" step="any" name="dtopor" value="0" autocomplete="off"/>
+                           </div>
+                        </div>
+                        <div class="col-sm-1">
+                           <div class="form-group">
+                              Y
+                              <input class="form-control" type="number" step="any" name="inclineal" value="0" autocomplete="off"/>
+                           </div>
+                        </div>
+                        <div class="col-sm-1">
+                           <br/>
+                           <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                              <span class="glyphicon glyphicon-floppy-disk"></span>
+                           </button>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-sm-5">
+                           <div class="checkbox-inline">
+                              <label>
+                                 <input type="checkbox" name="mincoste" value="TRUE" checked=""/>
+                                 mínimo = precio de coste
+                              </label>
+                           </div>
+                           <div class="checkbox-inline">
+                              <label>
+                                 <input type="checkbox" name="maxpvp" value="TRUE" checked=""/>
+                                 máximo = precio de venta
+                              </label>
+                           </div>
+                        </div>
+                        <div class="col-sm-7">
+                           <p class="help-block">
+                              ¿Buscas <b>Precio de venta + X% + Y</b>? ¿O <b>Precio de coste - X% - Y</b>?
+                              Puedes usar números negativos, simplemente pon un <b>-</b> delante.
+                              <mark>1 - -1 = 1 + 1</mark>
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </form>
+         <div class="panel panel-warning">
+            <div class="panel-heading">
+               <h3 class="panel-title">Importar tarifas antiguas</h3>
+            </div>
+            <div class="panel-body">
+               <p>Si lo deseas puedes importar las tarifas antiguas, las de facturacion_base.</p>
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}&importar=TRUE">
+                  <span class="glyphicon glyphicon-import"></span>
+                  <span class="hidden-xs">&nbsp; Importar</span>
+               </a>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{include="footer"}

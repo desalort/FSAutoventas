@@ -1,0 +1,84 @@
+{include="header"}
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+   // Load the Visualization API and the piechart package.
+   google.load('visualization', '1.0', {'packages':['corechart']});
+   
+   // Set a callback to run when the Google Visualization API is loaded.
+   google.setOnLoadCallback(drawChart);
+   
+   // Callback that creates and populates a data table,
+   // instantiates the pie chart, passes in the data and
+   // draws it.
+   function drawChart()
+   {
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'mes');
+      data.addColumn('number', 'total');
+      data.addColumn('number', 'pagados');
+      data.addRows([
+      {loop="$fsc->stats_from_recibos()"}
+         ['{$value['mes']}', {$value['total']}, {$value['pagados']}],
+      {/loop}
+      ]);
+      
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.AreaChart(document.getElementById('chart_recibos'));
+      chart.draw(data);
+      
+      // Create the data table.
+      var data2 = new google.visualization.DataTable();
+      data2.addColumn('string', 'mes');
+      data2.addColumn('number', 'total');
+      data2.addColumn('number', 'pagados');
+      data2.addRows([
+      {loop="$fsc->stats_from_recibos('recibosprov')"}
+         ['{$value['mes']}', {$value['total']}, {$value['pagados']}],
+      {/loop}
+      ]);
+      
+      // Instantiate and draw our chart, passing in some options.
+      var chart2 = new google.visualization.AreaChart(document.getElementById('chart_recibos_prov'));
+      chart2.draw(data2);
+   }
+</script>
+
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+               Informe de recibos
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+            </h1>
+         </div>
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <h3 class="panel-title">Recibos de ventas de los últimos años</h3>
+            </div>
+            <div class="panel-body">
+               <div id="chart_recibos" style="height: 350px;"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <h3 class="panel-title">Recibos de compras de los últimos años</h3>
+            </div>
+            <div class="panel-body">
+               <div id="chart_recibos_prov" style="height: 350px;"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{include="footer"}

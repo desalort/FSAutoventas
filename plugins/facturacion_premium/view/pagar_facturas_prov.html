@@ -1,0 +1,196 @@
+{include="header"}
+
+<script type="text/javascript">
+   function fs_marcar_todo()
+   {
+      $("#f_agrupar_cli input[name='idfactura[]']").prop('checked', true);
+   }
+   function fs_marcar_nada()
+   {
+      $("#f_agrupar_cli input[name='idfactura[]']").prop('checked', false);
+   }
+   $(document).ready(function() {
+      $("#ac_proveedor").autocomplete({
+         serviceUrl: '{$fsc->url()}',
+         paramName: 'buscar_proveedor',
+         onSelect: function (suggestion) {
+            if(suggestion)
+            {
+               if(document.f_pagar_facturas.codproveedor.value != suggestion.data)
+               {
+                  document.f_pagar_facturas.codproveedor.value = suggestion.data;
+                  $("#todos_prov").prop('checked', false);
+               }
+            }
+         }
+      });
+   });
+</script>
+
+<form name="f_pagar_facturas" class="form" action="{$fsc->url()}" method="post">
+   <input type="hidden" name="codproveedor" value="{$fsc->codproveedor}"/>
+   <div class="container">
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="page-header">
+               <h1>
+                  <a href="index.php?page=compras_facturas" class="btn btn-xs btn-default">
+                     <span class="glyphicon glyphicon-arrow-left"></span>
+                  </a>
+                  Pagar facturas de compra
+                  <a href="{$fsc->url()}" class="btn btn-xs btn-default" title="recargar la página">
+                     <span class="glyphicon glyphicon-refresh"></span>
+                  </a>
+               </h1>
+               <p class="help-block">
+                  Haz una búsqueda para seleccionar las facturas que quieres marcar como pagadas.
+               </p>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-2">
+            <div class="form-group">
+               Desde:
+               <input class="form-control datepicker" type="text" name="desde" value="{$fsc->desde}" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Hasta:
+               <input class="form-control datepicker" type="text" name="hasta" value="{$fsc->hasta}" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Serie:
+               <select name="codserie" class="form-control">
+                  {loop="$fsc->serie->all()"}
+                  <option value="{$value->codserie}"{if="$value->codserie==$fsc->codserie"} selected=""{/if}>{$value->descripcion}</option>
+                  {/loop}
+               </select>
+            </div>
+         </div>
+         <div class="col-sm-4">
+            <div class="form-group">
+               Proveedor:
+               {if="$fsc->proveedor"}
+               <input id="ac_proveedor" class="form-control" type="text" name="ac_proveedor" placeholder="{$fsc->proveedor->nombre}" autocomplete="off"/>
+               {else}
+               <input id="ac_proveedor" class="form-control" type="text" name="ac_proveedor" placeholder="buscar..." autocomplete="off"/>
+               {/if}
+               <label>
+                  <input id="todos_prov" type="checkbox" name="todos" value="TRUE"{if="!$fsc->codproveedor"} checked=""{/if}/>
+                  Todos los proveedores
+               </label>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <br/>
+            <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+               <span class="glyphicon glyphicon-search"></span> &nbsp; Buscar
+            </button>
+         </div>
+      </div>
+   </div>
+</form>
+
+{if="$fsc->resultados"}
+<form id="f_agrupar_cli" class="form" name="f_agrupar_cli" action="{$fsc->url()}" method="post">
+   <input type="hidden" name="codproveedor" value="{$fsc->codproveedor}"/>
+   {if="!$fsc->codproveedor"}
+   <input type="hidden" name="todos" value="TRUE"/>
+   {/if}
+   <input type="hidden" name="desde" value="{$fsc->desde}"/>
+   <input type="hidden" name="hasta" value="{$fsc->hasta}"/>
+   <input type="hidden" name="codserie" value="{$fsc->codserie}"/>
+   <div class="container">
+      <div class="row">
+         <div class="col-sm-12">
+            <ul class="nav nav-tabs">
+               <li role="presentation" class="active"><a href="#">Resultados</a></li>
+            </ul>
+            <div class="table-responsive">
+               <!--{$total=0}-->
+               <table class="table table-hover">
+                  <thead>
+                     <tr>
+                        <th></th>
+                        <th class="text-left">Código + Núm. proveedor</th>
+                        <th class="text-left">Proveedor</th>
+                        <th class="text-left">Observaciones</th>
+                        <th class="text-right">Total</th>
+                        <th class="text-right">Fecha</th>
+                        <th class="text-right">Hora</th>
+                     </tr>
+                  </thead>
+                  {loop="$fsc->resultados"}
+                  <tr class="{if="$value->anulada"}danger{elseif="$value->total<=0"}warning{/if}">
+                     <td class="text-center">
+                        {if condition="$value->pagada"}
+                        <span class="glyphicon glyphicon-ok" title="La factura está pagada"></span>
+                        {else}
+                        <input type="checkbox" name="idfactura[]" value="{$value->idfactura}" checked="checked"/>
+                        <!--{$total+=$value->total}-->
+                        {/if}
+                     </td>
+                     <td>
+                        <a href="{$value->url()}">{$value->codigo}</a> {$value->numproveedor}
+                        {if="$value->anulada"}
+                        <span class="glyphicon glyphicon-remove" title="La {#FS_FACTURA#} está anulada"></span>
+                        {/if}
+                        {if="$value->idfacturarect"}
+                        <span class="glyphicon glyphicon-flag" title="{#FS_FACTURA_RECTIFICATIVA#} de {$value->codigorect}"></span>
+                        {/if}
+                     </td>
+                     <td>{$value->nombre}</td>
+                     <td>{$value->observaciones_resume()}</td>
+                     <td class="text-right">{$fsc->show_precio($value->total, $value->coddivisa)}</td>
+                     <td class="text-right">{$value->fecha}</td>
+                     <td class="text-right">{$value->hora}</td>
+                  </tr>
+                  {else}
+                  <tr class="warning">
+                     <td></td>
+                     <td colspan="6">Ninguna factura encontrada. Pulsa <b>Nueva</b> para crear una.</td>
+                  </tr>
+                  {/loop}
+                  <tr>
+                     <td colspan="4"></td>
+                     <td class="text-right"><b>{$fsc->show_precio($total)}</b></td>
+                     <td colspan="2"></td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-6">
+            <div class="btn-group">
+               <button class="btn btn-sm btn-default" type="button" onclick="fs_marcar_todo()" title="Marcar todo">
+                  <span class="glyphicon glyphicon-check"></span>
+               </button>
+               <button class="btn btn-sm btn-default" type="button" onclick="fs_marcar_nada()" title="Desmarcar todo">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+               </button>
+            </div>
+         </div>
+         <div class="col-sm-6 text-right">
+            <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();">
+               <span class="glyphicon glyphicon-ok"></span> &nbsp; Marcar como pagadas
+            </button>
+         </div>
+      </div>
+   </div>
+</form>
+{elseif="$fsc->codserie"}
+<div class="container">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="alert alert-info">Sin resultados. Intenta ajustar las fechas.</div>
+      </div>
+   </div>
+</div>
+{/if}
+
+{include="footer"}

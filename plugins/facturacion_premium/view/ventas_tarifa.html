@@ -1,0 +1,220 @@
+{include="header"}
+
+{if="$fsc->tarifa_s"}
+<script type="text/javascript">
+   function eliminar_tarifa(cod)
+   {
+      if( confirm("¿Realmente desea eliminar la tarifa "+cod+"?") )
+         window.location.href = '{$fsc->url()}&delete_tarifa='+cod;
+   }
+   function eliminar_tarifa2(cod,madre,fam)
+   {
+      if( confirm("¿Realmente desea eliminar la tarifa para la familia "+fam+"?") )
+         window.location.href = '{$fsc->url()}&cod='+madre+'&delete_tarifa='+cod;
+   }
+</script>
+
+<div class="container">
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <a class="btn btn-xs btn-default" href="{$fsc->url()}">
+                  <span class="glyphicon glyphicon-arrow-left"></span>
+               </a>
+               Tarifa {$fsc->tarifa_s->codtarifa}
+               <small>{$fsc->tarifa_s->nombre}</small>
+               <a class="btn btn-xs btn-default" href="{$fsc->tarifa_s->url()}" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+            </h1>
+            <p class="help-block">
+               <b>Grupos de clientes</b> que tienen asignada esta tarifa:
+               {loop="$fsc->get_grupos_tar($fsc->tarifa_s->codtarifa)"}
+               <a href="{$value->url()}">{$value->nombre}</a>,
+               {else}
+               -
+               {/loop}
+            </p>
+         </div>
+      </div>
+   </div>
+   <form class="form" action="{$fsc->tarifa_s->url()}" method="post">
+      <input type="hidden" name="codtarifa" value="{$fsc->tarifa_s->codtarifa}"/>
+      <div class="row">
+         <div class="col-sm-4">
+            <div class="form-group">
+               Nombre:
+               <input class="form-control" type="text" name="nombre" value="{$fsc->tarifa_s->nombre}" maxlength="50" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-4">
+            <div class="form-group">
+               Aplicar:
+               <select name="aplicar_a" class="form-control">
+                  <option value="pvp">Precio de venta - X% - Y</option>
+                  <option value="coste"{if="$fsc->tarifa_s->margen"} selected=""{/if}>Precio de coste + X% + Y</option>
+               </select>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               X
+               <div class="input-group">
+                  <input class="form-control" type="number" step="any" name="dtopor" value="{$fsc->tarifa_s->x()}" autocomplete="off"/>
+                  <span class="input-group-addon">%</span>
+               </div>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <div class="form-group">
+               Y
+               <div class="input-group">
+                  <input class="form-control" type="number" step="any" name="inclineal" value="{$fsc->tarifa_s->y()}" autocomplete="off"/>
+                  <span class="input-group-addon">{$fsc->simbolo_divisa()}</span>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-6">
+            <div class="checkbox-inline">
+               <label>
+                  {if="$fsc->tarifa_s->mincoste"}
+                  <input type="checkbox" name="mincoste" value="TRUE" checked=""/>
+                  {else}
+                  <input type="checkbox" name="mincoste" value="TRUE"/>
+                  {/if}
+                  mínimo = precio de coste
+               </label>
+            </div>
+            <div class="checkbox-inline">
+               <label>
+                  {if="$fsc->tarifa_s->maxpvp"}
+                  <input type="checkbox" name="maxpvp" value="TRUE" checked=""/>
+                  {else}
+                  <input type="checkbox" name="maxpvp" value="TRUE"/>
+                  {/if}
+                  máximo = precio de venta
+               </label>
+            </div>
+         </div>
+         <div class="col-sm-6 text-right">
+            <div class="btn-group">
+               {if="$fsc->allow_delete"}
+               <a href="#" class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminar_tarifa('{$fsc->tarifa_s->codtarifa}')">
+                  <span class="glyphicon glyphicon-trash"></span>
+                  <span class="hidden-xs">&nbsp; Eliminar</span>
+               </a>
+               {/if}
+               <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                  <span class="hidden-xs">&nbsp; Guardar</span>
+               </button>
+            </div>
+         </div>
+      </div>
+   </form>
+   <div class="row">
+      <div class="col-sm-12">
+         <hr/>
+         <p class="help-block">
+            Si lo deseas, puedes definir descuentos o márgenes especiales para una o varias familias.
+         </p>
+         <div class="table-responsive">
+               <table class="table table-hover">
+                  <thead>
+                     <tr>
+                        <th class="text-left">Familia</th>
+                        <th class="text-left">Aplicar</th>
+                        <th class="text-right">X%</th>
+                        <th class="text-right">Y</th>
+                        <th class="text-right">Acción</th>
+                     </tr>
+                  </thead>
+                  {loop="$fsc->tarifas_familias"}
+                  <form action="{$fsc->tarifa_s->url()}" method="post" class="form">
+                     <input type="hidden" name="codtarifa" value="{$value->codtarifa}"/>
+                     <input type="hidden" name="madre" value="{$value->madre}"/>
+                     <input type="hidden" name="codfamilia" value="{$value->codfamilia}"/>
+                     {if="$fsc->tarifa_s->mincoste"}
+                     <input type="hidden" name="mincoste" value="TRUE"/>
+                     {/if}
+                     {if="$fsc->tarifa_s->maxpvp"}
+                     <input type="hidden" name="maxpvp" value="TRUE"/>
+                     {/if}
+                     <tr>
+                        <td><div class="form-control">{$value->nombre}</div></td>
+                        <td>
+                           <select name="aplicar_a" class="form-control">
+                              <option value="pvp">Precio de venta - X% - Y</option>
+                              <option value="coste"{if="$value->margen"} selected=""{/if}>Precio de coste + X% + Y</option>
+                           </select>
+                        </td>
+                        <td>
+                           <input class="form-control text-right" type="number" step="any" name="dtopor" value="{$value->x()}" autocomplete="off"/>
+                        </td>
+                        <td>
+                           <input class="form-control text-right" type="number" step="any" name="inclineal" value="{$value->y()}" autocomplete="off"/>
+                        </td>
+                        <td class="text-right">
+                           <div class="btn-group">
+                              {if="$fsc->allow_delete"}
+                              <a href="#" class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminar_tarifa2('{$value->codtarifa}','{$value->madre}','{$value->codfamilia}')">
+                                 <span class="glyphicon glyphicon-trash"></span>
+                              </a>
+                              {/if}
+                              <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                                 <span class="glyphicon glyphicon-floppy-disk"></span>
+                              </button>
+                           </div>
+                        </td>
+                     </tr>
+                  </form>
+                  {/loop}
+                  {if="$fsc->familias_no"}
+                  <form name="f_nueva_tarifa" action="{$fsc->tarifa_s->url()}" method="post" class="form">
+                     <input type="hidden" name="codtarifa" value=""/>
+                     <input type="hidden" name="madre" value="{$fsc->tarifa_s->codtarifa}"/>
+                     {if="$fsc->tarifa_s->mincoste"}
+                     <input type="hidden" name="mincoste" value="TRUE"/>
+                     {/if}
+                     {if="$fsc->tarifa_s->maxpvp"}
+                     <input type="hidden" name="maxpvp" value="TRUE"/>
+                     {/if}
+                     <tr class="info">
+                        <td>
+                           <select name="codfamilia" class="form-control">
+                              {loop="$fsc->familias_no"}
+                              <option value="{$value->codfamilia}">{$value->descripcion}</option>
+                              {/loop}
+                           </select>
+                        </td>
+                        <td>
+                           <select name="aplicar_a" class="form-control">
+                              <option value="pvp">Precio de venta - X% - Y</option>
+                              <option value="coste"{if="$fsc->tarifa_s->margen"} selected=""{/if}>Precio de coste + X% + Y</option>
+                           </select>
+                        </td>
+                        <td>
+                           <input class="form-control text-right" type="number" step="any" name="dtopor" value="{$fsc->tarifa_s->x()}" autocomplete="off"/>
+                        </td>
+                        <td>
+                           <input class="form-control text-right" type="number" step="any" name="inclineal" value="{$fsc->tarifa_s->y()}" autocomplete="off"/>
+                        </td>
+                        <td class="text-right">
+                           <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled=true;this.form.submit();" title="Guardar">
+                              <span class="glyphicon glyphicon-floppy-disk"></span>
+                           </button>
+                        </td>
+                     </tr>
+                  </form>
+                  {/if}
+               </table>
+         </div>
+      </div>
+   </div>
+</div>
+{/if}
+
+{include="footer"}

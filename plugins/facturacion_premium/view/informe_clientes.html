@@ -1,0 +1,248 @@
+{include="header"}
+
+<ul class="nav nav-tabs">
+   <li role="presentation"{if="$fsc->opcion=='distcli' OR $fsc->opcion=='distfac'"} class="active"{/if}>
+      <a href="{$fsc->url()}&opcion=distcli">
+         <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+         <span class="hidden-xs">&nbsp; Distribución</span>
+      </a>
+   </li>
+   <li role="presentation"{if="$fsc->opcion=='nuevos'"} class="active"{/if}>
+      <a href="{$fsc->url()}&opcion=nuevos">
+         <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+         <span class="hidden-xs">&nbsp; Nuevos</span>
+      </a>
+   </li>
+   <li role="presentation"{if="$fsc->opcion=='top'"} class="active"{/if}>
+      <a href="{$fsc->url()}&opcion=top">
+         <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+         <span class="hidden-xs">&nbsp; Mejores clientes</span>
+      </a>
+   </li>
+   <li role="presentation"{if="$fsc->opcion=='deudores'"} class="active"{/if}>
+      <a href="{$fsc->url()}&opcion=deudores">
+         <span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span>
+         <span class="hidden-xs">&nbsp; Deudores</span>
+      </a>
+   </li>
+</ul>
+
+{if="$fsc->opcion=='distcli' OR $fsc->opcion=='distfac'"}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+   google.load("visualization", "1", {packages:["treemap"]});
+   google.setOnLoadCallback(drawRegionsMap);
+   
+   function drawRegionsMap()
+   {
+      {if="$fsc->opcion=='distcli'"}
+      var data = google.visualization.arrayToDataTable([
+         ['Location', 'Parent', 'Clientes'],
+         ['Global', null, 0],
+         {loop="$fsc->distribucion_clientes('dirclientes')"}
+         ['{$value['codpais']}', 'Global', {$value['total']}],
+         {/loop}
+         {loop="$fsc->distribucion_clientes('dirclientes',TRUE)"}
+         ['{$value['provincia']}', '{$value['codpais']}', {$value['total']}],
+         {/loop}
+      ]);
+      {else}
+      var data = google.visualization.arrayToDataTable([
+         ['Location', 'Parent', 'Clientes'],
+         ['Global', null, 0],
+         {loop="$fsc->distribucion_clientes('facturascli')"}
+         ['{$value['codpais']}', 'Global', {$value['total']}],
+         {/loop}
+         {loop="$fsc->distribucion_clientes('facturascli',TRUE)"}
+         ['{$value['provincia']}', '{$value['codpais']}', {$value['total']}],
+         {/loop}
+      ]);
+      {/if}
+      
+      var chart = new google.visualization.TreeMap(document.getElementById('regions_div'));
+      var options = {
+         highlightOnMouseOver: true,
+         maxPostDepth: 2,
+         minColor: '#EFFFFF',
+         midColor: '#6CCFFF',
+         maxColor: '#447EFF',
+         useWeightedAverageForAggregation: true,
+      };
+      chart.draw(data, options);
+   }
+</script>
+
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-6">
+         <h3>Distribución geográfica</h3>
+         <p class="help-block">
+            {if="$fsc->opcion=='distcli'"}
+            Esta es la distribución de tus clientes por país y {#FS_PROVINCIA#} atendiendo
+            al número de clientes, es decir, <b>cuantos más clientes tienes en una {#FS_PROVINCIA#}
+            o país, más grande es el rectángulo</b>.
+            {else}
+            Esta es la distribución de tus clientes por país y {#FS_PROVINCIA#} atendiendo
+            a tu facturación, es decir, <b>cuanto más vendes a clientes en una {#FS_PROVINCIA#}
+            o país, más grande es el rectángulo</b>.
+            {/if}
+         </p>
+      </div>
+      <div class="col-sm-6 text-right">
+         <br/>
+         <div class="btn-group">
+            <a href="{$fsc->url()}&opcion=distcli" class="btn btn-sm btn-default{if="$fsc->opcion=='distcli'"} active{/if}">
+               Nº de clientes
+            </a>
+            <a href="{$fsc->url()}&opcion=distfac" class="btn btn-sm btn-default{if="$fsc->opcion=='distfac'"} active{/if}">
+               Facturación
+            </a>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-12">
+         <br/>
+         <div id="regions_div" style="height: 500px;"></div>
+         <p class="help-block">Puedes hacer clic para ver más detalles.</p>
+      </div>
+   </div>
+</div>
+{elseif="$fsc->opcion=='nuevos'"}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+   google.load('visualization', '1.0', {'packages':['corechart','calendar']});
+   google.setOnLoadCallback(drawChart);
+   
+   function drawChart()
+   {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'mes');
+      data.addColumn('number', 'nuevos');
+      data.addColumn('number', 'total');
+      data.addRows([
+      {loop="$fsc->resultados"}
+         ['{$value['mes']}', {$value['nuevos']}, {$value['total']}],
+      {/loop}
+      ]);
+      
+      var classicOptions = {
+           height: 400,
+           series: {
+              0: {targetAxisIndex: 0},
+              1: {targetAxisIndex: 1}
+           },
+           vAxes: {
+              0: {title: 'Nuevos'},
+              1: {title: 'Total'}
+           },
+      };
+      
+      var chart = new google.visualization.AreaChart(document.getElementById('chart_clientes'));
+      chart.draw(data, classicOptions);
+      
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn({ type: 'date', id: 'Fecha' });
+      dataTable.addColumn({ type: 'number', id: 'Nuevos' });
+      dataTable.addRows([
+         {loop="$fsc->nuevos_clientes_dias()"}
+         [ new Date({$value['anyo']}, {$value['mes']}, {$value['dia']}), {$value['total']} ],
+         {/loop}
+        ]);
+      
+      var chart2 = new google.visualization.Calendar(document.getElementById('chart_calendario'));
+      var options = {
+         title: "Calendario",
+         height: 600,
+         calendar: {
+            daysOfWeek: 'DLMXJVS',
+         }
+      };
+      
+      chart2.draw(dataTable, options);
+   }
+</script>
+
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12">
+         <div id="chart_clientes" style="height: 500px;"></div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-12">
+         <div id="chart_calendario"></div>
+      </div>
+   </div>
+</div>
+{elseif="$fsc->opcion=='top'"}
+<div class="table-responsive">
+   <table class="table table-hover">
+      <thead>
+         <tr>
+            <th class="text-left">Código + Nombre</th>
+            <th class="text-left">{#FS_CIFNIF#}</th>
+            <th class="text-left">email</th>
+            <th class="text-left">Teléfono</th>
+            <th class="text-left">Observaciones</th>
+            <th class="text-right">Pagos</th>
+         </tr>
+      </thead>
+      {loop="$fsc->resultados"}
+      <tr class='clickableRow{if="$value[0]->debaja"} danger{/if}' href='{$value[0]->url()}'>
+         <td>
+            <a href="{$value[0]->url()}">{$value[0]->codcliente}</a> {$value[0]->nombre}
+            {if="$value[0]->debaja"}
+            <span class="label label-default" title="cliente dado de baja">de baja</span>
+            {/if}
+         </td>
+         <td>{$value[0]->cifnif}</td>
+         <td>{$value[0]->email}</td>
+         <td>{$value[0]->telefono1}</td>
+         <td>{$value[0]->observaciones_resume()}</td>
+         <td class="text-right">{$fsc->show_precio($value[1])}</td>
+      </tr>
+      {else}
+      <tr class="warning">
+         <td colspan="6">No hay suficientes datos.</td>
+      </tr>
+      {/loop}
+   </table>
+</div>
+{elseif="$fsc->opcion=='deudores'"}
+<div class="table-responsive">
+   <table class="table table-hover">
+      <thead>
+         <tr>
+            <th class="text-left">Código + Nombre</th>
+            <th class="text-left">{#FS_CIFNIF#}</th>
+            <th class="text-left">email</th>
+            <th class="text-left">Teléfono</th>
+            <th class="text-left">Observaciones</th>
+            <th class="text-right">Deuda</th>
+         </tr>
+      </thead>
+      {loop="$fsc->resultados"}
+      <tr class='clickableRow{if="$value[0]->debaja"} danger{/if}' href='{$value[0]->url()}'>
+         <td>
+            <a href="{$value[0]->url()}">{$value[0]->codcliente}</a> {$value[0]->nombre}
+            {if="$value[0]->debaja"}
+            <span class="label label-default" title="cliente dado de baja">de baja</span>
+            {/if}
+         </td>
+         <td>{$value[0]->cifnif}</td>
+         <td>{$value[0]->email}</td>
+         <td>{$value[0]->telefono1}</td>
+         <td>{$value[0]->observaciones_resume()}</td>
+         <td class="text-right">{$fsc->show_precio($value[1])}</td>
+      </tr>
+      {else}
+      <tr class="warning">
+         <td colspan="6">Sin resultados.</td>
+      </tr>
+      {/loop}
+   </table>
+</div>
+{/if}
+
+{include="footer"}
