@@ -49,9 +49,10 @@ class autoventas_pedidos extends fs_controller{
               if ($listaPedidos[$i]->tipo=="pedido") {
                 $respuesta[$i] = $this->trata_pedido($listaPedidos[$i]);
                 $p +=1;
+                
               } else {
                   if ($listaPedidos[$i]->tipo=="albaran") { 
-                        $respuesta[$i] = $this->trata_pedido($listaPedidos[$i]);
+                        $respuesta[$i] = $this->trata_albaran($listaPedidos[$i]);
                         $a +=1;                  
                   }
               }
@@ -105,6 +106,57 @@ class autoventas_pedidos extends fs_controller{
          $this->divisa = new divisa();
          $p["numero2"] = $pedidoRaw->numero2;
          $respuesta = $this->nuevo_pedido_cliente($p);
+      }    
+      return $respuesta;
+   }
+   
+ 
+      protected function trata_albaran($pedidoRaw)
+   {
+      $this->cliente = new cliente();
+      $this->cliente_s = FALSE;
+      $this->direccion = FALSE;
+      $this->fabricante = new fabricante();
+      $this->familia = new familia();
+      $this->impuesto = new impuesto();
+      $this->results = array();
+      $this->grupo = new grupo_clientes();
+      $this->pais = new pais();
+      
+      /// cargamos la configuración
+      $respuesta = "Intentando albaran...";
+      
+      $p = json_decode($pedidoRaw->pedido, TRUE);
+      
+      if( isset($p['cliente']) ) {
+         $this->cliente_s = $this->cliente->get($p['cliente']);
+         
+         if($this->cliente_s)
+         {
+            foreach($this->cliente_s->get_direcciones() as $dir)
+            {
+               if($dir->domfacturacion)
+               {
+                  $this->direccion = $dir;
+                  break;
+               }
+            }
+         }
+         
+         if( isset($p['codagente']) )
+         {
+            $agente = new agente();
+            $this->agente = $agente->get($p['codagente']);
+         }
+         
+         
+         $this->almacen = new almacen();
+         $this->serie = new serie();
+         $this->forma_pago = new forma_pago();
+         $this->divisa = new divisa();
+         $p["numero2"] = $pedidoRaw->numero2;
+         $respuesta = $this->nuevo_albaran_cliente($p);
+         echo "NUMERO2 " . $p["numero2"];
       }    
       return $respuesta;
    }
@@ -524,6 +576,7 @@ class autoventas_pedidos extends fs_controller{
    
 private function nuevo_albaran_cliente($p)
    {
+   // print_r($p);
       $continuar = TRUE;
       $respuesta ="";
       $cliente = $this->cliente->get($p['cliente']);
@@ -569,7 +622,7 @@ private function nuevo_albaran_cliente($p)
          $continuar = FALSE;
       }
       
-      $divisa = $this->divisa->get($_POST['divisa']);
+      $divisa = $this->divisa->get($p['divisa']);
       if(!$divisa)
       {
          $respuesta .= 'Divisa no encontrada.';
@@ -596,8 +649,8 @@ private function nuevo_albaran_cliente($p)
          $albaran->porcomision = $this->agente->porcomision;
          
          $albaran->codcliente = $cliente->codcliente;
-         $albaran->cifnif = $p['cifnif'];
-         $albaran->nombrecliente = $p['nombrecliente'];
+         $albaran->cifnif = $cliente->cifnif;
+         $albaran->nombrecliente = $cliente->nombre;
         $direccion=array();
          foreach($cliente->get_direcciones() as $dir)
             {
